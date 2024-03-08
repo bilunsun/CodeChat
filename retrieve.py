@@ -1,7 +1,9 @@
 import dspy
 from dataclasses import dataclass
 
-from nomic_embed import embed, TaskType
+# from embedding.nomic_embed import embed, TaskType
+
+from embedding.e5_embed import embed
 from weaviate_db import query_weaviate_db
 
 
@@ -18,7 +20,8 @@ class DSPythonicRMClient(dspy.Retrieve):
         self.k = k
 
     def forward(self, query: str, k: int | None = None) -> dspy.Prediction:
-        query_vector = embed(query, task_type=TaskType.SEARCH_QUERY)[0]
+        query_vector = embed([query])[0]
+        # query_vector = embed([query], task_type=TaskType.SEARCH_QUERY)[0]
         returned_chunks = query_weaviate_db(query_vector, k=k or self.k)
 
         return [Passage(chunk) for chunk in returned_chunks]

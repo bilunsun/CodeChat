@@ -2,13 +2,16 @@ import dspy
 
 from retrieve import DSPythonicRMClient
 from chunking import chunk_directory
-from nomic_embed import embed, TaskType
+from embedding.e5_embed import embed
+
+# from embedding.nomic_embed import embed, TaskType
 from weaviate_db import create_from_chunks_and_embeddings
 
 # Setup
-# chunks = chunk_directory(".", required_exts=[".py"])
-chunks = chunk_directory("demo_dir", required_exts=[".txt"])
-embeddings = embed(chunks, task_type=TaskType.SEARCH_DOCUMENT)
+chunks = chunk_directory(".", required_exts=[".py"])
+# chunks = chunk_directory("demo_dir", required_exts=[".txt"])
+embeddings = embed(chunks)
+# embeddings = embed(chunks, task_type=TaskType.SEARCH_DOCUMENT)
 create_from_chunks_and_embeddings(chunks, embeddings)
 
 lm = dspy.OllamaLocal(model="dolphin-mixtral:latest")
@@ -31,7 +34,8 @@ class RAG(dspy.Module):
 
 rag = RAG()
 # pred = rag("How many properties did the National Accountability Bureau freeze?")
-pred = rag("What is the scientific name of the Ifac silene?")
+# pred = rag("What is the scientific name of the Ifac silene?")
+pred = rag("Which Ollama model is used?")
 for c in pred.context:
     print("-" * 80)
     print(c)
